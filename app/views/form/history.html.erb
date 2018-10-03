@@ -1,0 +1,49 @@
+<%= javascript_include_tag 'standard_datatable' %>
+<% index_label = "Forms" %>
+<% index_path = forms_path %>
+<% second_level_breadcrumb(index_label, index_path, @identifier) %>
+<h3>History: <%= @identifier %></h3>
+<div class="row">
+	<div class="col-md-12">
+		<h4>Item History</h4>
+		<table id="main" class="table table-striped table-bordered table-condensed">
+			<%= render partial: "shared/stdInstanceHeader" %>
+			<tbody>
+				<% current_item = get_current_item(@forms) %>
+				<% @forms.each do |item| %>
+					<%= render partial: "shared/stdInstanceRow", :locals => {:item => item,
+						:current_item => current_item, 
+		  				:showPath => form_path(:id => item.id, :namespace => item.namespace), 
+		  				:searchPath => "", 
+		  				:viewPath => view_forms_path(:id => item.id, :namespace => item.namespace),
+		  				:editPath => edit_form_path(:id => item.id, :namespace => item.namespace),
+		  				:deletePath => form_path(:id => item.id, :namespace => item.namespace),
+		  				:index_label => index_label,
+		  				:index_path => index_path,
+		  				:mi_class => Form } %>
+				<% end %>				
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<h4>Comment History</h4>
+		<table id="secondary" class="table table-striped table-bordered table-condensed">
+  		<%= render partial: "shared/commentHistoryHeader" %>
+  		<tbody>
+    		<% @forms.each do |item| %>
+    			<%= render partial: "shared/commentHistoryRow", 
+						:locals => { 
+							:item => item,
+							:index_label => index_label,
+							:index_path => index_path,
+							:mi_class => Form
+						} %>  
+    		<% end %>
+  		</tbody>
+		</table>
+	</div>
+</div>
+<%= link_to "Changes", changes_iso_managed_index_path({iso_managed: {rdf_type: @forms.first.rdf_type, child_property: "label", identifier: @identifier, scope_id: @scope_id}}), :class => "btn btn-primary" %>
+  

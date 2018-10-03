@@ -1,0 +1,59 @@
+<%= javascript_include_tag 'standard_datatable' %>
+<% second_level_breadcrumb("CDISC Terminology", history_cdisc_terms_path, "Changes") %>
+<h3>Changes: <%= @identifier %> <small><%= @identifier %></small></h3>
+<style>
+	<%= Diffy::CSS %>
+</style>
+<div class="col-md-12">
+	<table id="main" class="table table-striped table-bordered table-condensed">
+	  <thead>
+			<tr>
+				<th>Identifier</th>
+				<th>Label</th>
+				<th>Submission Value</th>
+				<% @trimmed_results.each do |result| %>
+			  	<% r = result[:results] %>
+			    <th class="text-center"><%= result[:date] %></th>
+			  <% end %>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>	
+			<% @cls.each do |key, cl| %>
+			  <% s = cl[:status] %>
+			  <tr>
+					<td><%= key %></td>
+					<td><%= cl[:preferred_term] %></td>
+					<td><%= cl[:notation] %></td>
+					<% s.each do |status| %>
+						<% if status == :created %>
+							<td class="text-center"><span class="glyphicon glyphicon-ok text-success"/></td>
+						<% elsif status == :no_change %>
+							<td class="text-center"><span class="glyphicon glyphicon-minus text-success"/></td>
+						<% elsif status == :updated %>
+							<td class="text-center"><span class="text-center glyphicon glyphicon-edit text-warning"/></td>
+						<% elsif status == :deleted %>
+							<td class="text-center"><span class="glyphicon glyphicon-remove text-danger"/></td>
+						<% elsif status == :not_present %>
+							<td class="text-center">&nbsp;</td>
+						<% else %>
+							<td class="text-center"><%=[status]%></td>
+						<% end %>
+					<% end %>
+					<td><%= link_to "Changes", changes_cdisc_cls_path(:id => cl[:id]), :class => "btn btn-primary btn-xs" %></td>
+				</tr>	
+			<% end %>
+		</tbody>
+	</table>
+	<% button_class = "btn btn-primary" %>
+	<% previous_class = @previous_version.nil? ? button_class + " disabled" : button_class %>
+	<% next_class = @next_version.nil? ? button_class + " disabled" : button_class %>
+	<%= link_to changes_cdisc_terms_path(cdisc_term: { version: @previous_version }), class: "#{previous_class}" do %>
+  	<span class="glyphicon glyphicon-chevron-left"></span>
+	<% end %>
+	<%= link_to changes_cdisc_terms_path(cdisc_term: { version: @next_version }), class: "#{next_class}" do %>
+  	<span class="glyphicon glyphicon-chevron-right"></span>
+	<% end %>
+	<%= link_to "Close", history_cdisc_terms_path, :class => "btn btn-primary" %>
+	<%= link_to "Report", changes_report_cdisc_terms_path(:format => :pdf), :class => "btn btn-primary", :target => "_blank" %>
+</div>
